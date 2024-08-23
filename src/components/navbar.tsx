@@ -52,7 +52,7 @@ export default function Navbar() {
                             <Button className="w-full md:w-auto" onClick={() => signOut()} variant="destructive">Sign Out</Button>
                         </div>
                     ) : (
-                        <Button className="w-full md:w-auto"><SignIn /></Button>
+                        <div className="w-full md:w-auto bg-black text-white p-1 px-2 rounded-lg"><SignIn /></div>
                     )}
                 </div>
             </div>

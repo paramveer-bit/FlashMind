@@ -38,7 +38,7 @@ function NewCard({handelSubmit}:cardData) {
 
 
   return (
-    <button 
+    <div 
         className='flex w-full h-[40vh] bg-slate-300 rounded-lg border-2 border-black'
 
         >
@@ -77,7 +77,7 @@ function NewCard({handelSubmit}:cardData) {
                 </DialogContent>
             </Dialog>
                 
-        </button>
+        </div>
   )
 }
 
