@@ -12,7 +12,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         async signIn({ profile }) {
 
-            console.log(profile);
             const email = profile?.email
             const name = profile?.name
             console.log(name, email);
