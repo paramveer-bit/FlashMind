@@ -4,10 +4,11 @@ import Google from "next-auth/providers/google"
 import query from "@/helpers/connectDb";
 import axios from "axios";
 
-const trustedHosts = ['localhost:3000'];
+const trustedHosts = ['localhost:30'];
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    secret: process.env.AUTH_SECRET,
     providers: [Google],
     callbacks: {
         async signIn({ profile }) {
