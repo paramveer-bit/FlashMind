@@ -34,6 +34,7 @@
     "react-draggable": "^4.4.6",
     "react-loader-spinner": "^6.1.6",
     "react-swipeable": "^7.0.1",
+    "safer-buffer": "^2.1.2",
     "sharp": "^0.33.5",
     "swiper": "^11.1.9",
     "tailwind-merge": "^2.5.2",
