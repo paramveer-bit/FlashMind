@@ -1,4 +1,6 @@
-import mysql from 'mysql2/promise';
+// import mysql from 'mysql2/promise';
+import mysql from 'serverless-mysql';
+
 import { RowDataPacket } from 'mysql2';
 
 const parseDatabaseUrl = (url: string) => {
@@ -12,21 +14,25 @@ const parseDatabaseUrl = (url: string) => {
     };
 };
 
+const { host, user, password, database, port } = parseDatabaseUrl(process.env.CONNECTION_URI!);
+
+// Create a connection using separate parameters
+const connection = mysql({
+    config: {
+        host,
+        user,
+        password,
+        database,
+        port
+    }
+});
+
+
 const query = async ({ query, values = [] }: { query: string, values: any[] }) => {
-    let connection;
     try {
-        const { host, user, password, database, port } = parseDatabaseUrl(process.env.CONNECTION_URI!);
 
-        // Create a connection using separate parameters
-        connection = await mysql.createConnection({
-            host,
-            user,
-            password,
-            database,
-            port
-        });
 
-        const [res] = await connection.execute(query, values);
+        const res = await connection.query(query, values);
         return res as RowDataPacket[];
     } catch (error: any) {
         console.error("Error:", error.message);
