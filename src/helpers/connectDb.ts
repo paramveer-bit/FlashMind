@@ -9,7 +9,7 @@ const db = serverlessMysql({
     }
 });
 
-export async function query({ query, values }: { query: String, values: any[] }) {
+export default async function query({ query, values }: { query: String, values: any[] }) {
     try {
         const results = await db.query(query, values);
         await db.end();
