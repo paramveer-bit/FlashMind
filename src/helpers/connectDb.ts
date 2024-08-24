@@ -1,42 +1,31 @@
-import mysql from 'serverless-mysql';
-import { RowDataPacket } from 'mysql2';
+import { error } from "console"
+import mysql from "mysql2/promise"
+import { RowDataPacket } from "mysql2";
 
-const parseDatabaseUrl = (url: string) => {
-    const urlObj = new URL(url);
-    return {
-        host: urlObj.hostname,
-        user: urlObj.username,
-        password: urlObj.password,
-        database: urlObj.pathname.slice(1), // Remove leading '/'
-        port: Number(urlObj.port) || 3306
-    };
-};
 
-const { host, user, password, database, port } = parseDatabaseUrl(process.env.CONNECTION_URI!);
-
-const connection = mysql({
-    config: {
-        host,
-        user,
-        password,
-        database,
-        port
-    }
-});
-
-const query = async ({ query, values = [] }: { query: string, values: any[] }) => {
+const query = async ({ query, values = [] }: {
+    query: string,
+    values: any[]
+}) => {
     try {
-        console.log("Executing query...");
+        const connection = await mysql.createConnection({
+            uri: process.env.CONNECTION_URI,
 
-        const res = await connection.query(query, values);
-        await connection.end(); // Ensure connection is properly closed after each query
-        console.log("Query result:", res);
+        })
+        try {
+            const [res] = await connection.execute(query, values)
+            connection.end()
+            return res as RowDataPacket[]
+        } catch (error: any) {
+            console.log("Somthing wrong happen while executing query")
+            throw error
+        }
 
-        return res as RowDataPacket[];
     } catch (error: any) {
-        console.error("Error during query execution:", error.message);
-        throw error;
+        console.log("Error in connecting to database")
+        throw error?.code + " , " + error?.message
     }
-};
 
-export default query;
+}
+
+export default query
