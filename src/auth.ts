@@ -23,6 +23,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 const querySql1 = "SELECT * FROM users WHERE email = ?"
                 const existingUser: any[] = await query({ query: querySql1, values: [email] })
+                console.log(existingUser.length)
+                console.log(existingUser)
                 if (existingUser.length != 0) {
                     console.log("User already exists++++++++++++++++++++++++++++++++")
                     return true

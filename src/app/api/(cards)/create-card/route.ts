@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
         const querySql1 = "SELECT * FROM users WHERE email = ?"
         const [existingUser] = await query({ query: querySql1, values: [email] })
-
+        // console.log(existingUser)
         if (!existingUser) {
             return NextResponse.json({ message: "No user found in database", success: false }, { status: 401 })
         }
