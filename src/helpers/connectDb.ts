@@ -1,6 +1,4 @@
-// import mysql from 'mysql2/promise';
 import mysql from 'serverless-mysql';
-
 import { RowDataPacket } from 'mysql2';
 
 const parseDatabaseUrl = (url: string) => {
@@ -16,7 +14,6 @@ const parseDatabaseUrl = (url: string) => {
 
 const { host, user, password, database, port } = parseDatabaseUrl(process.env.CONNECTION_URI!);
 
-// Create a connection using separate parameters
 const connection = mysql({
     config: {
         host,
@@ -27,22 +24,21 @@ const connection = mysql({
     }
 });
 
-
 const query = async ({ query, values = [] }: { query: string, values: any[] }) => {
     try {
-        console.log("##################################################")
+        console.log("Executing query...");
 
         const res = await connection.query(query, values);
-        console.log("------------------------------------------")
+        await connection.end(); // Ensure connection is properly closed after each query
+        console.log("Query result:", res);
+
         return res as RowDataPacket[];
     } catch (error: any) {
-        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-        console.log(error)
-        console.error("Error:", error.message);
+        console.error("Error during query execution:", error.message);
         throw error;
     } finally {
         if (connection) {
-            await connection.end();
+            await connection.quit(); // Properly close connection to avoid issues
         }
     }
 };

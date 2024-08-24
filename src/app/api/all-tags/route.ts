@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         const values = [owner]
 
         const res = await query({ query: quesryToCreate, values })
-
+        console.log(res)
         if (res.length == 0) {
             return NextResponse.json({ mesaage: "No Tags found For this user", success: true }, { status: 200 })
 
