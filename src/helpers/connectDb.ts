@@ -36,10 +36,6 @@ const query = async ({ query, values = [] }: { query: string, values: any[] }) =
     } catch (error: any) {
         console.error("Error during query execution:", error.message);
         throw error;
-    } finally {
-        if (connection) {
-            await connection.quit(); // Properly close connection to avoid issues
-        }
     }
 };
 
