@@ -30,11 +30,14 @@ const connection = mysql({
 
 const query = async ({ query, values = [] }: { query: string, values: any[] }) => {
     try {
-
+        console.log("##################################################")
 
         const res = await connection.query(query, values);
+        console.log("------------------------------------------")
         return res as RowDataPacket[];
     } catch (error: any) {
+        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        console.log(error)
         console.error("Error:", error.message);
         throw error;
     } finally {

@@ -3,7 +3,7 @@ import { auth } from "@/auth"
 export default auth((req) => {
     try {
         const path = req.nextUrl.pathname
-        console.log(req.auth)
+        // console.log(req.auth)
         if (!req.auth && (path == '/dashboard' || path.startsWith('/view') || path.startsWith('/play'))) {
             console.log("Yessss")
             return Response.redirect(new URL('/', req.nextUrl.origin));
