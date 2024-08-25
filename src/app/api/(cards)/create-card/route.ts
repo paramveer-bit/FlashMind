@@ -1,12 +1,16 @@
 import { auth } from "@/auth"
 import { NextRequest, NextResponse } from "next/server";
-import query from "@/helpers/connectDb";
-// import { getServerSession } from "next-auth";
+import { db } from "@vercel/postgres"
+import { cardTable, userTable } from "@/helpers/connectDb";
 
 
 export async function POST(req: NextRequest) {
+    const client = await db.connect()
     try {
+
         const session = await auth()
+        await client.query(cardTable)
+        await client.query(userTable)
         const { question, answer, tag } = await req.json()
 
 
@@ -15,9 +19,10 @@ export async function POST(req: NextRequest) {
         }
 
         const email = session.user.email
+        console.log(email)
 
-        const querySql1 = "SELECT * FROM users WHERE email = ?"
-        const [existingUser] = await query({ query: querySql1, values: [email] })
+        const querySql1 = "SELECT * FROM users WHERE email = $1"
+        const [existingUser] = (await client.query(querySql1, [email])).rows
         // console.log(existingUser)
         if (!existingUser) {
             return NextResponse.json({ message: "No user found in database", success: false }, { status: 401 })
@@ -26,11 +31,11 @@ export async function POST(req: NextRequest) {
         const owner = existingUser.uid
 
 
-        const quesryToCreate = "INSERT INTO cards(question,answer,tag,owner) VALUES( ?,?,?,?)"
+        const quesryToCreate = "INSERT INTO cards(question,answer,tag,owner) VALUES( $1,$2,$3,$4)"
         const values = [question, answer, tag, owner]
 
-        const res = await query({ query: quesryToCreate, values })
-
+        const res = (await client.query(quesryToCreate, values))
+        console.log("-------------------------------------")
         console.log(res)
 
         // console.log(session)

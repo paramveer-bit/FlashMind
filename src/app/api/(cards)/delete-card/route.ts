@@ -1,12 +1,16 @@
 import { auth } from "@/auth"
 import { NextRequest, NextResponse } from "next/server";
-import query from "@/helpers/connectDb";
-// import { getServerSession } from "next-auth";
+import { db } from "@vercel/postgres"
+import { cardTable, userTable } from "@/helpers/connectDb";
 
 
 export async function POST(req: NextRequest) {
+    const client = await db.connect()
+
     try {
         const session = await auth()
+        await client.query(cardTable)
+        await client.query(userTable)
         const { fid } = await req.json()
 
 
@@ -17,8 +21,8 @@ export async function POST(req: NextRequest) {
 
         const email = session.user.email
 
-        const querySql1 = "SELECT * FROM users WHERE email = ?"
-        const [existingUser] = await query({ query: querySql1, values: [email] })
+        const querySql1 = "SELECT * FROM users WHERE email = $1"
+        const [existingUser] = (await client.query(querySql1, [email])).rows
 
         if (!existingUser) {
             return NextResponse.json({ message: "No user found in database", success: false }, { status: 401 })
@@ -27,18 +31,18 @@ export async function POST(req: NextRequest) {
         const owner = existingUser.uid
 
 
-        const quesryToCreate = "SELECT * FROM cards WHERE fid = ? AND owner = ?"
+        const quesryToCreate = "SELECT * FROM cards WHERE fid = $1 AND owner = $2"
         const values = [fid, owner]
 
-        const res = await query({ query: quesryToCreate, values })
+        const res = (await client.query(quesryToCreate, values)).rows
 
         if (res.length == 0) {
             return NextResponse.json({ mesaage: "No Card found with this FID", success: false }, { status: 401 })
 
         }
 
-        const queryToDelete = "DELETE FROM cards WHERE fid = ? AND owner = ?"
-        const deleted = await query({ query: queryToDelete, values })
+        const queryToDelete = "DELETE FROM cards WHERE fid = $1 AND owner = $2"
+        const deleted = (await client.query(queryToDelete, values))
 
         if (!deleted) {
             return NextResponse.json({ message: "Error in deleting this card", success: false }, { status: 500 })

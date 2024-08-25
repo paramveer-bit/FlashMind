@@ -1,22 +1,18 @@
-import { RowDataPacket } from 'mysql2';
-import serverlessMysql from 'serverless-mysql';
+export const userTable = `
+CREATE TABLE IF NOT EXISTS users(
+    uid SERIAL PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW()
+)`;
 
-const db = serverlessMysql({
-    config: {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-    }
-});
-
-export default async function query({ query, values }: { query: String, values: any[] }) {
-    try {
-        const results = await db.query(query, values);
-        // console.log(results)
-        await db.end();
-        return results as RowDataPacket[];
-    } catch (error: any) {
-        throw Error(error.message);
-    }
-}
+export const cardTable = `
+CREATE TABLE IF NOT EXISTS cards(
+    fid SERIAL PRIMARY KEY,
+    question VARCHAR(400) NOT NULL,
+    answer VARCHAR(2000) NOT NULL,
+    tag VARCHAR(30) NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
+    owner INT NOT NULL,
+    FOREIGN KEY (owner) REFERENCES users(uid)
+)`;

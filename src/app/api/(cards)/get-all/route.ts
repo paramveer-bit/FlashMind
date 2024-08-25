@@ -1,12 +1,17 @@
 import { auth } from "@/auth"
 import { NextRequest, NextResponse } from "next/server";
-import query from "@/helpers/connectDb";
-// import { getServerSession } from "next-auth";
+import { db } from "@vercel/postgres"
+import { cardTable, userTable } from "@/helpers/connectDb";
 
 
 export async function GET(req: NextRequest) {
+    const client = await db.connect()
+
     try {
         const session = await auth()
+
+        await client.query(cardTable)
+        await client.query(userTable)
 
 
         if (!session?.user) {
@@ -15,8 +20,8 @@ export async function GET(req: NextRequest) {
 
         const email = session.user.email
 
-        const querySql1 = "SELECT * FROM users WHERE email = ?"
-        const [existingUser] = await query({ query: querySql1, values: [email] })
+        const querySql1 = "SELECT * FROM users WHERE email = $1"
+        const [existingUser] = (await client.query(querySql1, [email])).rows
 
         if (!existingUser) {
             return NextResponse.json({ message: "No user found in database", success: false }, { status: 401 })
@@ -25,10 +30,10 @@ export async function GET(req: NextRequest) {
         const owner = existingUser.uid
 
 
-        const quesryToCreate = "SELECT * FROM cards WHERE owner = ?"
+        const quesryToCreate = "SELECT * FROM cards WHERE owner = $1"
         const values = [owner]
 
-        const res = await query({ query: quesryToCreate, values })
+        const res = (await client.query(quesryToCreate, values)).rows
 
         if (res.length == 0) {
             return NextResponse.json({ mesaage: "No Card found For this user", success: false }, { status: 401 })
