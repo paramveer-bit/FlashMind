@@ -89,7 +89,7 @@ function DashboardPage() {
           </DialogContent>
         </Dialog>
       </div>
-      {tags.length > 0 && tags.map((tag) => <Comp key={tag} tag={tag} />)}
+      {tags!.length > 0 && tags.map((tag) => <Comp key={tag} tag={tag} />)}
     </div>
   )
 }
