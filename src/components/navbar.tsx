@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { Button } from "./ui/button"
 import SignIn from '@/comp/SignIn'
-import { signOut } from "next-auth/react"
+    import { signOut } from "next-auth/react"
 import {
     Tooltip,
     TooltipContent,
